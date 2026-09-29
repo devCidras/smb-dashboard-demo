@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SMB Dashboard</title>
+<link rel="stylesheet" href="/static/style.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div>
+    <h1>SMB Dashboard</h1>
+    <p class="subtitle">Furniture &amp; electronics store &mdash; sales, stock and orders</p>
+  </div>
+  <span class="badge-live">demo data</span>
+</header>
+
+<main>
+  <section class="kpi-grid">
+    <div class="kpi-card">
+      <span class="kpi-label">Revenue (delivered + shipped)</span>
+      <span class="kpi-value">&euro; {{ "{:,.2f}".format(data.summary.revenue) }}</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-label">Orders</span>
+      <span class="kpi-value">{{ data.summary.orders }}</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-label">Units sold</span>
+      <span class="kpi-value">{{ data.summary.units }}</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-label">Avg. order value</span>
+      <span class="kpi-value">&euro; {{ "{:,.2f}".format(data.summary.avg_order_value) }}</span>
+    </div>
+    <div class="kpi-card {{ 'kpi-alert' if data.summary.low_stock_count > 0 else '' }}">
+      <span class="kpi-label">Stock alerts</span>
+      <span class="kpi-value">{{ data.summary.low_stock_count }}</span>
+    </div>
+  </section>
+
+  <section class="chart-grid">
+    <div class="panel">
+      <h2>Monthly revenue trend</h2>
+      <canvas id="chartMonthly"></canvas>
+    </div>
+    <div class="panel">
+      <h2>Top 5 products by revenue</h2>
+      <canvas id="chartTopProducts"></canvas>
+    </div>
+    <div class="panel">
+      <h2>Orders by status</h2>
+      <canvas id="chartStatus"></canvas>
+    </div>
+    <div class="panel">
+      <h2>Revenue by region</h2>
+      <canvas id="chartRegion"></canvas>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Stock alerts</h2>
+    {% if data.stock_alerts %}
+    <table class="stock-table">
+      <thead>
+        <tr><th>Product</th><th>Category</th><th>Current stock</th><th>Reorder level</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        {% for item in data.stock_alerts %}
+        <tr>
+          <td>{{ item.product }}</td>
+          <td>{{ item.category }}</td>
+          <td>{{ item.stock_qty }}</td>
+          <td>{{ item.reorder_level }}</td>
+          <td><span class="status-pill {{ 'status-critical' if item.stock_qty < item.reorder_level else 'status-warning' }}">
+            {{ 'Critical' if item.stock_qty < item.reorder_level else 'Reorder soon' }}
+          </span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="empty-state">No products below the minimum stock level.</p>
+    {% endif %}
+  </section>
+</main>
+
+<script id="dashboard-data" type="application/json">{{ data_json | safe }}</script>
+<script src="/static/dashboard.js"></script>
+</body>
+</html>
