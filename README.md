@@ -2,6 +2,10 @@
 
 **Portfolio demo — Python (FastAPI) + SQLite + Chart.js**
 
+**Live demo: https://smb-dashboard-demo.onrender.com/**
+(hosted on a free tier — it sleeps after inactivity, so the first load
+can take 30-50 seconds)
+
 ![Dashboard screenshot](sample-output/dashboard-screenshot.png)
 
 ## The problem
